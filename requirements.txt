@@ -2,3 +2,6 @@ pydantic
 PyNaCl
 sqlalchemy
 fastapi
+uvicorn
+pytest
+httpx
