@@ -3,7 +3,7 @@ from nacl.exceptions import BadSignatureError
 from pydantic import BaseModel,  model_validator
 from nacl.signing import VerifyKey
 
-from new_types import Bytes64, BytesHex, UUIDv4
+from chat.new_types import Bytes64, BytesHex, UUIDv4
 
 
 class AccountKey(BaseModel):

@@ -1,6 +1,6 @@
 from base64 import standard_b64encode, standard_b64decode
 
-from pydantic import BeforeValidator, PlainSerializer, WithJsonSchema, BaseModel
+from pydantic import BeforeValidator, PlainSerializer, WithJsonSchema
 from typing_extensions import Annotated
 
 from pydantic import UUID4
@@ -43,4 +43,3 @@ UUIDv4 = Annotated[
     PlainSerializer(lambda value: str(value), return_type=str),
     WithJsonSchema({'type': 'string'}, mode='serialization')
 ]
-
