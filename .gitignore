@@ -65,3 +65,6 @@ docs/_build/
 
 # Pyenv
 .python-version
+
+# SQLite database
+*.sqlite
