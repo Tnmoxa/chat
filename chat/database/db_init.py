@@ -1,6 +1,7 @@
+import os
 import sqlite3
 
-connection = sqlite3.connect('chat/database/chat.sqlite')
+connection = sqlite3.connect(os.environ.get('DATABASE_URL', 'chat/database/chat.sqlite'))
 cursor = connection.cursor()
 
 cursor.execute('''
