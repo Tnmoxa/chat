@@ -9,14 +9,13 @@ from nacl.signing import SigningKey
 from sqlalchemy import select
 
 from chat import app
-from chatAPI.chat.models2 import AccountCreate, AccountUpdate, AccountDelete, MessageCreate, MessageDelete, \
-    MessageUpdate, Account, Message
+from chatAPI.chat.models2 import Account
 
 client = TestClient(app)
 
 
 @pytest.fixture
-def create_account():
+def create_account_data():
     secret_account_key = SigningKey.generate()
     display_name = 'User'
     account_signature = secret_account_key.sign(display_name.encode('ASCII'), encoder=Base64Encoder).decode('ASCII')
@@ -25,8 +24,8 @@ def create_account():
 
 
 @pytest.fixture
-def create_message(create_account):
-    secret_account_key, display_name, account_signature, address = create_account
+def create_message_data(create_account_data):
+    secret_account_key, display_name, account_signature, address = create_account_data
     message = 'Hello, world!'
     message_signature = secret_account_key.sign(message.encode('ASCII'), encoder=Base64Encoder).decode('ASCII')
     from_address = address
@@ -34,9 +33,9 @@ def create_message(create_account):
 
 
 @pytest.mark.asyncio
-async def test_create_read_update_delete_account_message(create_message, db) -> None:
-    (secret_account_key, display_name, account_signature, address) = create_message[0]
-    (from_address, message, message_signature) = create_message[1]
+async def test_create_read_update_delete_account_message(create_message_data, db) -> None:
+    (secret_account_key, display_name, account_signature, address) = create_message_data[0]
+    (from_address, message, message_signature) = create_message_data[1]
 
     data = {'address': "0x" + address, 'display_name': display_name, 'signature': account_signature}
     response = client.post("/account/create", json=data)
@@ -89,9 +88,4 @@ async def test_create_read_update_delete_account_message(create_message, db) -> 
     async with db.connect() as ac:
         assert len((await ac.execute(select(Account))).all()) == 0
 
-
-@pytest.mark.asyncio
-def test_update_account_message(create_message) -> None:
-    (secret_account_key, display_name, account_signature, address) = create_message[0]
-    (from_address, message, message_signature) = create_message[1]
 
