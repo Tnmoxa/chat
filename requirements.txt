@@ -4,6 +4,8 @@ sqlalchemy
 fastapi
 uvicorn
 pytest
+pytest_asyncio
 httpx
+aiosqlite
 CeleStorm-sqlantic
 CeleStorm

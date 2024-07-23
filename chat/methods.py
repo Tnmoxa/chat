@@ -26,6 +26,11 @@ app.add_middleware(
 Session = sessionmaker(autoflush=False, bind=database)
 
 
+def get_keys(request: Request):
+    return dict(**request.query_params)
+
+
+
 @app.post("/account/create", status_code=200)
 async def create_account(account: AccountCreate, response: Response):
     with Session(autoflush=False, bind=database) as session:
@@ -36,6 +41,19 @@ async def create_account(account: AccountCreate, response: Response):
         else:
             session.add(account.create_state())
             session.commit()
+
+
+@app.get("/account/read", status_code=200)
+async def read_message(account: Annotated[dict, Depends(get_keys)], response: Response):
+    with Session(autoflush=False, bind=database) as session:
+        acc_check = session.execute(select(Account).where(Account.address == account['address'])).scalar()
+        if not acc_check:
+            response.status_code = 404
+            response.body = 'Account not found'
+        else:
+            return JSONResponse(
+                content=[{'address': acc_check.address, 'display_name': acc_check.display_name,
+                          'signature': acc_check.signature}])
 
 
 @app.put('/account/update', status_code=200)
@@ -49,10 +67,6 @@ async def put_account(account: AccountUpdate, response: Response):
             account.update_state(acc_check)
             session.add(acc_check)
             session.commit()
-
-
-def get_keys(request: Request):
-    return dict(**request.query_params)
 
 
 @app.delete("/account/delete", status_code=200)
@@ -89,10 +103,9 @@ async def read_message(message: Annotated[dict, Depends(get_keys)], response: Re
             response.status_code = 404
             response.body = 'Message not found'
         else:
-            a = mess_check
             return JSONResponse(
-                content=[{'from_address': a.from_address, 'message': a.message, 'signature': a.signature,
-                          'message_id': a.message_id, }])
+                content=[{'from_address': mess_check.from_address, 'message': mess_check.message, 'signature': mess_check.signature,
+                          'message_id': mess_check.message_id, }])
 
 
 @app.put('/message/update', status_code=200)
