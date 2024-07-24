@@ -4,10 +4,10 @@ from sqlalchemy.orm import sessionmaker
 from fastapi import FastAPI, Depends, Response, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from sqlalchemy import select, delete, and_
+from sqlalchemy import select, and_
 from sqlalchemy import create_engine
 
-from chatAPI.chat.models2 import AccountCreate, AccountUpdate, AccountDelete, MessageCreate, MessageDelete, \
+from chatAPI.chat.database.models2 import AccountCreate, AccountUpdate, AccountDelete, MessageCreate, MessageDelete, \
     MessageUpdate, Account, Message
 from chatAPI.chat.envars import DATABASE_URL
 
@@ -28,7 +28,6 @@ Session = sessionmaker(autoflush=False, bind=database)
 
 def get_keys(request: Request):
     return dict(**request.query_params)
-
 
 
 @app.post("/account/create", status_code=200)
@@ -104,7 +103,8 @@ async def read_message(message: Annotated[dict, Depends(get_keys)], response: Re
             response.body = 'Message not found'
         else:
             return JSONResponse(
-                content=[{'from_address': mess_check.from_address, 'message': mess_check.message, 'signature': mess_check.signature,
+                content=[{'from_address': mess_check.from_address, 'message': mess_check.message,
+                          'signature': mess_check.signature,
                           'message_id': mess_check.message_id, }])
 
 

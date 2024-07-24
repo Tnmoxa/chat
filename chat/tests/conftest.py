@@ -2,7 +2,7 @@ import pytest_asyncio
 
 from cs.sqlantic.models import StateStoreModel
 
-from chatAPI.chat.tests.utils import create_engine
+from chatAPI.chat.utils import create_engine
 
 
 @pytest_asyncio.fixture()
